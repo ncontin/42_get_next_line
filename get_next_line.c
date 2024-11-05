@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:14:17 by ncontin           #+#    #+#             */
-/*   Updated: 2024/10/30 13:42:33 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/05 18:53:06 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,15 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 	int			bytes_read;
+	int			newline_pos;
+	char		*temp;
 
-	buffer = (char *)malloc(BUFFER_SIZE);
 	if (buffer == NULL)
-		return (NULL);
-	line = NULL;
+	{
+		buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+		if (buffer == NULL)
+			return (NULL);
+	}
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
 	// read return -1 if an error occured, needs protection for that
 	if (bytes_read < 0)
@@ -33,13 +37,20 @@ char	*get_next_line(int fd)
 	// read data until the end of the file
 	while (bytes_read)
 	{
-		if (search_newline(buffer))
+		// search for the newline and store newline position
+		newline_pos = search_newline(buffer);
+		// if newline is valid
+		if (newline_pos >= 0)
 		{
-			ft_strdup(buffer);
+			line = ft_strdup(buffer, newline_pos);
+			break ;
 		}
 		else
 		{
-			// keep reading
+			temp = line;
+			line = ft_strjoin(line, buffer);
+			free(temp);
+			bytes_read = read(fd, buffer, BUFFER_SIZE);
 		}
 	}
 	return (line);
@@ -49,10 +60,16 @@ int	main(void)
 {
 	int		fd;
 	char	*line;
+	int		count;
 
 	fd = open("numbers.dict", O_RDONLY);
 	line = get_next_line(fd);
-	printf("%s", line);
-	free(line);
+	count = 0;
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		count++;
+		printf("[%d]%s", count, line);
+		free(line);
+	}
 	close(fd);
 }
