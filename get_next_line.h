@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:16:57 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/05 18:22:10 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/06 19:25:03 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@
 int		search_newline(char *str);
 char	*ft_strdup(char *str, int newline_pos);
 char	*ft_strjoin(char const *s1, char const *s2);
-void	*ft_calloc(size_t nmemb, size_t size);
 char	*get_next_line(int fd);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+int		ft_strlen(const char *str);
 
 #endif

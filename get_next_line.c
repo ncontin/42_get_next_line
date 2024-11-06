@@ -6,70 +6,83 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:14:17 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/05 18:53:06 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/06 19:26:22 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
 	char		*line;
 	int			bytes_read;
-	int			newline_pos;
 	char		*temp;
+	int			newline_pos;
+	char		*buffer;
+	static char	*stash = NULL;
 
-	if (buffer == NULL)
-	{
-		buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-		if (buffer == NULL)
-			return (NULL);
-	}
-	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	// read return -1 if an error occured, needs protection for that
-	if (bytes_read < 0)
-	{
-		free(buffer);
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	}
-	// read data until the end of the file
-	while (bytes_read)
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		return (NULL);
+	// Read and accumulate in stash until newline or EOF
+	while (!stash || search_newline(stash) == -1)
 	{
-		// search for the newline and store newline position
-		newline_pos = search_newline(buffer);
-		// if newline is valid
-		if (newline_pos >= 0)
-		{
-			line = ft_strdup(buffer, newline_pos);
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read <= 0)
 			break ;
-		}
+		buffer[bytes_read] = '\0';
+		if (!stash)
+			stash = ft_strdup(buffer, bytes_read);
 		else
 		{
-			temp = line;
-			line = ft_strjoin(line, buffer);
-			free(temp);
-			bytes_read = read(fd, buffer, BUFFER_SIZE);
+			temp = ft_strjoin(stash, buffer);
+			free(stash);
+			stash = temp;
 		}
+	}
+	// Handle EOF or error
+	if (!stash || bytes_read < 0)
+	{
+		free(stash);
+		stash = NULL;
+		return (NULL);
+	}
+	// Extract line and update stash
+	newline_pos = search_newline(stash);
+	if (newline_pos >= 0)
+	{
+		line = ft_strdup(stash, newline_pos + 1);
+		temp = ft_substr(stash, newline_pos + 1, ft_strlen(stash)
+				- newline_pos);
+		free(stash);
+		stash = temp;
+	}
+	else
+	{
+		line = ft_strdup(stash, ft_strlen(stash));
+		free(stash);
+		stash = NULL;
 	}
 	return (line);
 }
 
-int	main(void)
-{
-	int		fd;
-	char	*line;
-	int		count;
+#include <stdio.h>
 
-	fd = open("numbers.dict", O_RDONLY);
+int	main(void)
+
+{
+	int fd;
+	char *line;
+
+	fd = open("numbers.txt", O_RDONLY);
 	line = get_next_line(fd);
-	count = 0;
-	while ((line = get_next_line(fd)) != NULL)
+	while (line)
 	{
-		count++;
-		printf("[%d]%s", count, line);
+		printf("%s", line);
 		free(line);
+		line = get_next_line(fd);
 	}
 	close(fd);
 }

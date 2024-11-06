@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 12:55:06 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/05 18:42:54 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/06 19:24:54 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ char	*ft_strdup(char *str, int newline_pos)
 	dest = (char *)malloc(newline_pos + 1);
 	if (dest == NULL)
 		return (NULL);
-	while (i <= newline_pos)
+	while (i < newline_pos)
 	{
 		dest[i] = str[i];
 		i++;
@@ -79,21 +79,26 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	res[i] = '\0';
 	return (res);
 }
-void	*ft_calloc(size_t nmemb, size_t size)
-{
-	void	*ptr;
-	char	*conv;
-	size_t	i;
 
-	i = 0;
-	ptr = malloc(nmemb * size);
-	if (!ptr)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char			*substr;
+	size_t			i;
+	unsigned int	slen;
+
+	if (!s)
 		return (NULL);
-	conv = (char *)ptr;
-	while (i < nmemb * size)
-	{
-		conv[i] = 0;
-		i++;
-	}
-	return (ptr);
+	i = 0;
+	slen = ft_strlen(s);
+	if (start >= slen)
+		return (ft_strdup("", 1));
+	if (start + len > slen)
+		len = slen - start;
+	substr = (char *)malloc(len + 1);
+	if (!substr)
+		return (NULL);
+	while (i < len && start < slen)
+		substr[i++] = s[start++];
+	substr[i] = '\0';
+	return (substr);
 }
