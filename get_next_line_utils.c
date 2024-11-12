@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 12:55:06 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/12 15:21:11 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/12 19:38:08 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ int	ft_strlen(const char *str)
 {
 	int	counter;
 
+	counter = 0;
 	if (!str)
 		return (0);
-	counter = 0;
 	while (str[counter])
 		counter++;
 	return (counter);
@@ -27,6 +27,8 @@ int	search_newline(char *str)
 {
 	int	i;
 
+	if (!str)
+		return (-1);
 	i = 0;
 	while (str[i])
 	{
@@ -59,11 +61,9 @@ char	*ft_strdup(const char *s)
 
 char	*ft_strjoin(char *s1, char *s2)
 {
-	size_t	tot_len;
-	size_t	i;
-	size_t	j;
 	char	*res;
 
+	size_t tot_len, i, j;
 	if (!s1 && !s2)
 		return (NULL);
 	i = 0;
@@ -73,15 +73,16 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (NULL);
 	if (s1)
 	{
-		while (s1[i++])
+		while (s1[i])
+		{
 			res[i] = s1[i];
+			i++;
+		}
 		free(s1);
 	}
 	j = 0;
 	while (s2[j])
-	{
 		res[i++] = s2[j++];
-	}
 	res[i] = '\0';
 	return (res);
 }
