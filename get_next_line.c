@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:14:17 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/12 19:40:53 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/13 12:53:35 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ char	*get_next_line(int fd)
 	int			nl_pos;
 	char		*temp;
 
-	line = NULL;
 	// allocate memory to the buffer based on the BUFFER_SIZE
 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
@@ -61,14 +60,22 @@ char	*get_next_line(int fd)
 			stash = temp;
 			break ;
 		}
+		// check EOF
 		if (bytes_read == 0)
 		{
-			line = ft_strdup(stash);
-			free(stash);
-			free(line);
-			free(buffer);
-			stash = NULL;
-			return (NULL);
+			// check if string exists and is not empty
+			if (stash && *stash)
+			{
+				line = ft_strdup(stash);
+				free(stash);
+				stash = NULL;
+			}
+			else
+			{
+				free(stash);
+				stash = NULL;
+				line = NULL;
+			}
 		}
 	}
 	free(buffer);
@@ -86,7 +93,7 @@ char	*get_next_line(int fd)
 // 	while ((line = get_next_line(fd)) != NULL)
 // 	{
 // 		count++;
-// 		printf("[%d]%s\n", count, line);
+// 		printf("[%d]%s", count, line);
 // 		free(line);
 // 	}
 // 	close(fd);
