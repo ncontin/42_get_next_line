@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:14:17 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/13 12:53:35 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/13 19:21:54 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ char	*get_next_line(int fd)
 	{
 		free(buffer);
 		buffer = NULL;
+		free(stash);
+		stash = NULL;
 		return (NULL);
 	}
 	// initialize bytes read
@@ -41,11 +43,14 @@ char	*get_next_line(int fd)
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read < 0)
-		{
-			free(buffer);
-			return (NULL);
-		}
+		// if (bytes_read < 0)
+		// {
+		// 	free(buffer);
+		// 	buffer = NULL;
+		// 	// free(stash);
+		// 	// stash = NULL;
+		// 	return (NULL);
+		// }
 		buffer[bytes_read] = '\0';
 		// if newline is found
 		stash = ft_strjoin(stash, buffer);
@@ -64,18 +69,12 @@ char	*get_next_line(int fd)
 		if (bytes_read == 0)
 		{
 			// check if string exists and is not empty
-			if (stash && *stash)
-			{
+			if (stash && stash[0] != 0)
 				line = ft_strdup(stash);
-				free(stash);
-				stash = NULL;
-			}
 			else
-			{
-				free(stash);
-				stash = NULL;
 				line = NULL;
-			}
+			free(stash);
+			stash = NULL;
 		}
 	}
 	free(buffer);
