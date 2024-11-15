@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:14:17 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/15 11:41:02 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/15 12:53:17 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,31 +20,39 @@ void	clean_mem(char **buffer, char **stash)
 	free(*stash);
 	*stash = NULL;
 }
+int	extract_line(char **stash, char **line)
+{
+	char	*temp;
+	int		nl_pos;
 
+	nl_pos = search_newline(*stash);
+	// if found extract the line until newlinepos
+	if (nl_pos >= 0)
+	{
+		*line = ft_substr(*stash, 0, nl_pos + 1);
+		temp = ft_substr(*stash, nl_pos + 1, ft_strlen(*stash) - nl_pos - 1);
+		free(*stash);
+		*stash = temp;
+		return (1);
+	}
+	return (0);
+}
 char	*get_next_line(int fd)
 {
 	static char	*stash;
 	char		*buffer;
 	char		*line;
 	int			bytes_read;
-	int			nl_pos;
-	char		*temp;
 
-	// allocate memory to the buffer based on the BUFFER_SIZE
 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
-	// if fd is invalid
-	// we cant read 0 or less characters
-	// if the file exist and has something to read
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 	{
 		clean_mem(&buffer, &stash);
 		return (NULL);
 	}
-	// initialize bytes read
 	bytes_read = 1;
-	// read the fd until EOF
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
@@ -54,19 +62,9 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		buffer[bytes_read] = '\0';
-		// if newline is found
 		stash = ft_strjoin(stash, buffer);
-		// search newline position
-		nl_pos = search_newline(stash);
-		// if found extract the line until newlinepos
-		if (nl_pos >= 0)
-		{
-			line = ft_substr(stash, 0, nl_pos + 1);
-			temp = ft_substr(stash, nl_pos + 1, ft_strlen(stash) - nl_pos - 1);
-			free(stash);
-			stash = temp;
+		if (extract_line(&stash, &line))
 			break ;
-		}
 		// check EOF
 		if (bytes_read == 0)
 		{
