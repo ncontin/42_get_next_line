@@ -6,12 +6,20 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:14:17 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/13 19:21:54 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/15 11:41:02 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
+
+void	clean_mem(char **buffer, char **stash)
+{
+	free(*buffer);
+	*buffer = NULL;
+	free(*stash);
+	*stash = NULL;
+}
 
 char	*get_next_line(int fd)
 {
@@ -31,10 +39,7 @@ char	*get_next_line(int fd)
 	// if the file exist and has something to read
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 	{
-		free(buffer);
-		buffer = NULL;
-		free(stash);
-		stash = NULL;
+		clean_mem(&buffer, &stash);
 		return (NULL);
 	}
 	// initialize bytes read
@@ -43,14 +48,11 @@ char	*get_next_line(int fd)
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		// if (bytes_read < 0)
-		// {
-		// 	free(buffer);
-		// 	buffer = NULL;
-		// 	// free(stash);
-		// 	// stash = NULL;
-		// 	return (NULL);
-		// }
+		if (bytes_read < 0)
+		{
+			clean_mem(&buffer, &stash);
+			return (NULL);
+		}
 		buffer[bytes_read] = '\0';
 		// if newline is found
 		stash = ft_strjoin(stash, buffer);
