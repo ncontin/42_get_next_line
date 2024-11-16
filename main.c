@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 13:05:21 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/15 18:43:20 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/16 12:23:08 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,13 @@ int	main(void)
 
 	fd = open("1char.txt", O_RDONLY);
 	count = 0;
-	do
+	line = get_next_line(1);
+	while (line)
 	{
-		line = get_next_line(fd);
 		count++;
 		printf("[%d]%s", count, line);
 		free(line);
-	} while (line != NULL);
+		line = get_next_line(1);
+	}
 	close(fd);
 }

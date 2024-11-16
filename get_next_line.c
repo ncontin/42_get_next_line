@@ -6,18 +6,19 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 17:14:17 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/15 18:42:16 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/16 12:43:33 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-void	clean_stash_buf(char **buffer, char **stash)
+void	*clean_stash_buf(char **buffer, char **stash)
 {
 	free(*buffer);
 	*buffer = NULL;
 	free(*stash);
 	*stash = NULL;
+	return (NULL);
 }
 
 int	extract_line(char **stash, char **line)
@@ -60,20 +61,14 @@ char	*get_next_line(int fd)
 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
-	{
-		clean_stash_buf(&buffer, &stash);
-		return (NULL);
-	}
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (clean_stash_buf(&buffer, &stash));
 	bytes_read = 1;
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
-		{
-			clean_stash_buf(&buffer, &stash);
-			return (NULL);
-		}
+			return (clean_stash_buf(&buffer, &stash));
 		buffer[bytes_read] = '\0';
 		stash = ft_strjoin(stash, buffer);
 		if (extract_line(&stash, &line))

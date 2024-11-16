@@ -6,7 +6,7 @@
 /*   By: ncontin <ncontin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 12:55:06 by ncontin           #+#    #+#             */
-/*   Updated: 2024/11/15 17:40:28 by ncontin          ###   ########.fr       */
+/*   Updated: 2024/11/16 12:38:03 by ncontin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ char	*ft_strdup(const char *s)
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*res;
-	size_t	tot_len;
 	size_t	i;
 	size_t	j;
 
@@ -73,8 +72,7 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (NULL);
 	if (!s1)
 		return (ft_strdup(s2));
-	tot_len = (ft_strlen(s1) + ft_strlen(s2));
-	res = malloc(tot_len + 1);
+	res = malloc((ft_strlen(s1) + ft_strlen(s2)) + 1);
 	if (!res)
 		return (NULL);
 	i = 0;
